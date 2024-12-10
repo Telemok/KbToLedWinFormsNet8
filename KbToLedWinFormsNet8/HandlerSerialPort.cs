@@ -54,9 +54,36 @@ namespace KbToLedWinFormsNet8
 				//MessageBox.Show($"Ошибка открытия COM-порта: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
-
+		// Замена нечитаемых символов
+		private static string ProcessInvalidCharacters(string input)
+		{
+			StringBuilder result = new StringBuilder();
+			foreach (char c in input)
+			{
+				if(c == '\r')
+					result.Append("\\r");
+				else if(c == '\n')
+					result.Append("\\n");
+				else if(char.IsControl(c)) // Управляющие символы, кроме CR и LF
+				{
+					result.Append('□'); // Квадратик
+				}
+				else
+				{
+					result.Append(c);
+				}
+			}
+			return result.ToString();
+		}
 		private static void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
 		{
+			string data = _serialPort?.ReadExisting();
+
+
+			// Заменяем нечитаемые символы квадратиками
+			string processedData = ProcessInvalidCharacters(data);
+
+
 			EventErrorMessage?.Invoke($"DataReceived=«{e?.ToString()??"null"}».");
 		}
 
