@@ -113,5 +113,19 @@ namespace KbToLedWinFormsNet8
 		{
 
 		}
+
+		private void listBox1_DoubleClick(object sender, EventArgs e)
+		{
+			if (listBox1.SelectedItem != null)
+			{
+				string selectedItem = listBox1.SelectedItem?.ToString()?? "не выбрано";
+				textBox2.Text = selectedItem;
+				//MessageBox.Show($"Вы выбрали: {selectedItem}");
+			}
+			else
+			{
+				//MessageBox.Show("Ничего не выбрано.");
+			}
+		}
 	}
 }

@@ -52,6 +52,7 @@
 			listBox1.Name = "listBox1";
 			listBox1.Size = new Size(184, 79);
 			listBox1.TabIndex = 3;
+			listBox1.DoubleClick += listBox1_DoubleClick;
 			// 
 			// label1
 			// 
