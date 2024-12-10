@@ -25,59 +25,15 @@ namespace KbToLedWinFormsNet8
 	public partial class Form1 : Form
 	{
 
+		public static Libs.ControlledTimer loopTimer;
 
-		private const uint SPI_SETDEFAULTINPUTLANG = 0x005A;
-		private const uint SPI_GETDEFAULTINPUTLANG = 0x0059;
-		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref uint pvParam, uint fWinIni);
-
-		public void Foo()
-		{
-			uint localeUS = 0x00000409;
-			uint localeNL = 0x00000403;
-			SetSystemDefaultInputLanguage(localeUS);
-		}
-
-		public bool SetSystemDefaultInputLanguage(uint locale)
-		{
-			return SystemParametersInfo(SPI_SETDEFAULTINPUTLANG, 0, ref locale, 0);
-		}
-
-		public uint GetSystemDefaultInputLanguage()
-		{
-			uint result = uint.MinValue;
-			bool retVal = SystemParametersInfo(SPI_GETDEFAULTINPUTLANG, 0, ref result, 0);
-
-			return result;
-		}
-		public string GetKeyboardLayoutFromRegistry()
-		{
-			const string keyPath = @"HKEY_CURRENT_USER\Keyboard Layout\Preload";
-			string value = (string)Registry.GetValue(keyPath, "1", null);
-			if (value != null)
-			{
-				int languageId = int.Parse(value, System.Globalization.NumberStyles.HexNumber);
-				return new System.Globalization.CultureInfo(languageId).DisplayName;
-			}
-			return "Не удалось получить раскладку";
-		}
-
-
-
-		Libs.ControlledTimer loopTimer;
 		public Form1()
 		{
 			InitializeComponent();
 			loopTimer = new(() =>
 			{
-				System.Diagnostics.Debug.WriteLine("timer");
-					string s = System.Windows.Forms.InputLanguage.CurrentInputLanguage.Culture.ToString();
-
-
 				CultureInfo cultureName = ServiceKeyboardLayout.GetForegroundWindowCultureInfo();
-
-
-				s += $" culture={cultureName.DisplayName} reg={GetKeyboardLayoutFromRegistry()} lastLanguageLayot=«{lastLanguageLayot}», def=«{InputLanguage.DefaultInputLanguage.LayoutName}», cur=«{InputLanguage.CurrentInputLanguage.LayoutName}», l=«{GetSystemDefaultInputLanguage()}».";
+				string s = $" culture={cultureName.DisplayName} .";
 
 
 				// Заполнение начального списка портов
@@ -110,11 +66,9 @@ namespace KbToLedWinFormsNet8
 		{
 			InputLanguageChanged += Form1_InputLanguageChanged;
 		}
-		string lastLanguageLayot = "none";
 		private void Form1_InputLanguageChanged(object? sender, InputLanguageChangedEventArgs e)
 		{
-			InputLanguage l = e.InputLanguage;
-			lastLanguageLayot = l.LayoutName;
+			ServiceKeyboardLayout.TriggerChanged(e);
 			loopTimer.TriggerNow();
 		}
 
@@ -146,13 +100,18 @@ namespace KbToLedWinFormsNet8
 			}
 		}
 
-	//	private Timer _timer;
+		//	private Timer _timer;
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
 			// Остановка таймера при закрытии формы
 			//_timer.Stop();
 			//_timer.Dispose();
+		}
+
+		private void label1_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

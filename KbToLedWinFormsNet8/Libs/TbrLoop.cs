@@ -22,8 +22,6 @@ namespace KbToLedWinFormsNet8.Libs
 
 		public TimeSpan TimeoutLoop = TimeSpan.FromSeconds(1);
 
-		//public event System.EventHandler? EventChange;
-		public event Action? EventChange;
 		public TbrLoop(Func<Task> userFunc)
 		{
 			_userFunc = userFunc ?? throw new ArgumentNullException(nameof(userFunc));
@@ -34,7 +32,9 @@ namespace KbToLedWinFormsNet8.Libs
 			_userAction = userAction ?? throw new ArgumentNullException(nameof(userAction));
 		}
 
+		//public event System.EventHandler? OrderEnabledEventChange;
 
+		public event Action? OrderEnabledEventChange;
 
 		private bool _orderEnabled = false;
 		/// <summary>
@@ -99,7 +99,7 @@ namespace KbToLedWinFormsNet8.Libs
 							//_taskRunning?.Dispose();
 							this._taskRunning = null;//Пока цикл не работает, не занимаем память ресурсами
 						}
-						EventChange?.Invoke();
+						OrderEnabledEventChange?.Invoke();
 					}
 				}
 			}

@@ -50,6 +50,18 @@ namespace KbToLedWinFormsNet8
 			CultureInfo culture = new CultureInfo(languageId);
 			return culture;
 		}
+		public static string lastLanguageLayot { get; private set; } = "none";
 
+		public static void TriggerChanged(InputLanguageChangedEventArgs e)
+		{
+			InputLanguage l = e.InputLanguage;
+			lastLanguageLayot = l.LayoutName;
+			//loopTimer.TriggerNow();
+
+		}
+		public static void setup()
+		{
+			//lastLanguageLayot = 
+		}
 	}
 }
