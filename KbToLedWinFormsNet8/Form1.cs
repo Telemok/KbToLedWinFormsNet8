@@ -79,8 +79,14 @@ namespace KbToLedWinFormsNet8
 			loopTimer.Enabled = true;
 
 			HandlerSerialPort.EventIsConnectedChange += HandlerSerialPort_EventIsConnectedChange;
+			HandlerSerialPort.EventErrorMessage += HandlerSerialPort_EventErrorMessage; ;
 
 
+		}
+
+		private void HandlerSerialPort_EventErrorMessage(string errMsg)
+		{
+			log(errMsg);
 		}
 
 		private void HandlerSerialPort_EventIsConnectedChange(bool isConnected)
