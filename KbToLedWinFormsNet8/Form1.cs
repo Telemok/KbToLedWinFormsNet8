@@ -33,17 +33,66 @@ namespace KbToLedWinFormsNet8
 			loopTimer = new(() =>
 			{
 				CultureInfo cultureName = ServiceKeyboardLayout.GetForegroundWindowCultureInfo();
-				string s = $" culture={cultureName.EnglishName} .";
+				//string s = $" culture={cultureName.EnglishName} .";
 
 
 				// Заполнение начального списка портов
 				UpdateComPortList();
 
-				log(s);
+				//log(s);
+
+				bool connected = HandlerSerialPort.IsConnected();
+
+				if (checkBoxOrderEnableComPort.Checked)
+				{
+					if (!connected)
+					{
+						log($"Try connect COM port({this.textBoxComPortName.Text}, {int.Parse(this.textBoxBaudRate.Text)})");
+						HandlerSerialPort.InitSerialPort(this.textBoxComPortName.Text, int.Parse(this.textBoxBaudRate.Text));
+					}
+				}
+				else
+				{
+					if (connected)
+					{
+						log($"Try disconnect COM port");
+
+						HandlerSerialPort.CloseConnection();
+					}
+				}
+				if (connected)
+				{
+					string s = $"CNE={cultureName.EnglishName}\r\n";
+					log($"Write COM-port: «{s.Replace("\r", "\\r").Replace("\n", "\\n")}».");
+
+					HandlerSerialPort.Write(s);
+				}
+				this.Invoke(()=> {
+					listBoxComPorts.Enabled = !connected || !checkBoxOrderEnableComPort.Checked;
+					textBoxComPortName.Enabled = !connected || !checkBoxOrderEnableComPort.Checked;
+					textBoxBaudRate.Enabled = !connected || !checkBoxOrderEnableComPort.Checked;
+
+				});
+
 			});
 			UpdateComPortList();
 			loopTimer.Enabled = true;
+
+			HandlerSerialPort.EventIsConnectedChange += HandlerSerialPort_EventIsConnectedChange;
+
+
 		}
+
+		private void HandlerSerialPort_EventIsConnectedChange(bool isConnected)
+		{
+			if (this.InvokeRequired)
+			{
+				this.Invoke(new Action<bool>(HandlerSerialPort_EventIsConnectedChange), isConnected);
+				return;
+			}
+			this.checkBoxIsConnected.Checked = isConnected;
+		}
+
 		Queue<string> messages = [];
 		void log(string s)
 		{
@@ -87,7 +136,7 @@ namespace KbToLedWinFormsNet8
 			string[] ports = SerialPort.GetPortNames();
 
 			// Сравниваем с текущими элементами listBox1
-			List<string> currentPorts = listBox1.Items.Cast<string>().ToList();
+			List<string> currentPorts = listBoxComPorts.Items.Cast<string>().ToList();
 			string oldPortsStr = System.Text.Json.JsonSerializer.Serialize(currentPorts);
 			string newPortsStr = System.Text.Json.JsonSerializer.Serialize(ports);
 
@@ -95,8 +144,8 @@ namespace KbToLedWinFormsNet8
 			//if (!ports.SequenceEqual(currentPorts))
 			{
 				// Обновляем список в listBox1
-				listBox1.Items.Clear();
-				listBox1.Items.AddRange(ports);
+				listBoxComPorts.Items.Clear();
+				listBoxComPorts.Items.AddRange(ports);
 			}
 		}
 
@@ -116,16 +165,28 @@ namespace KbToLedWinFormsNet8
 
 		private void listBox1_DoubleClick(object sender, EventArgs e)
 		{
-			if (listBox1.SelectedItem != null)
+			if (listBoxComPorts.SelectedItem != null)
 			{
-				string selectedItem = listBox1.SelectedItem?.ToString()?? "не выбрано";
-				textBox2.Text = selectedItem;
+				string selectedItem = listBoxComPorts.SelectedItem?.ToString() ?? "не выбрано";
+				textBoxComPortName.Text = selectedItem;
 				//MessageBox.Show($"Вы выбрали: {selectedItem}");
 			}
 			else
 			{
 				//MessageBox.Show("Ничего не выбрано.");
 			}
+		}
+
+		private void textBoxBaudRate_TextChanged(object sender, EventArgs e)
+		{
+			loopTimer.TriggerNow();
+
+		}
+
+		private void textBoxComPortName_TextChanged(object sender, EventArgs e)
+		{
+			loopTimer.TriggerNow();
+
 		}
 	}
 }
