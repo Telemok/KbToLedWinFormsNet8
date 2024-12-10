@@ -33,7 +33,7 @@ namespace KbToLedWinFormsNet8
 			loopTimer = new(() =>
 			{
 				CultureInfo cultureName = ServiceKeyboardLayout.GetForegroundWindowCultureInfo();
-				string s = $" culture={cultureName.DisplayName} .";
+				string s = $" culture={cultureName.EnglishName} .";
 
 
 				// «аполнение начального списка портов
