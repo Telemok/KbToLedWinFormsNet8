@@ -84,7 +84,7 @@ namespace KbToLedWinFormsNet8
 			string processedData = ProcessInvalidCharacters(data);
 
 
-			EventErrorMessage?.Invoke($"DataReceived=«{e?.ToString()??"null"}».");
+			EventErrorMessage?.Invoke($"DataReceived=«{processedData}».");
 		}
 
 		public static void Write(string message)
