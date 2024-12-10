@@ -44,6 +44,7 @@ namespace KbToLedWinFormsNet8
 			try
 			{
 				_serialPort.Open();
+				_serialPort.DataReceived += _serialPort_DataReceived;
 			}
 			catch (Exception ex)
 			{
@@ -53,6 +54,12 @@ namespace KbToLedWinFormsNet8
 				//MessageBox.Show($"Ошибка открытия COM-порта: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+
+		private static void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+		{
+			EventErrorMessage?.Invoke($"DataReceived=«{e?.ToString()??"null"}».");
+		}
+
 		public static void Write(string message)
 		{
 			try
