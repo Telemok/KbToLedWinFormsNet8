@@ -149,9 +149,20 @@ namespace KbToLedWinFormsNet8
 			if (!string.Equals(oldPortsStr, newPortsStr))
 			//if (!ports.SequenceEqual(currentPorts))
 			{
-				// Обновляем список в listBox1
-				listBoxComPorts.Items.Clear();
-				listBoxComPorts.Items.AddRange(ports);
+				if (this.InvokeRequired)
+				{
+					this.Invoke(() =>
+					{//А то зависает когда отключают последний COM порт
+					 // Обновляем список в listBox1
+						listBoxComPorts.Items.Clear();
+						listBoxComPorts.Items.AddRange(ports);
+					});
+				}
+				else
+				{
+					listBoxComPorts.Items.Clear();
+					listBoxComPorts.Items.AddRange(ports);
+				}
 			}
 		}
 
