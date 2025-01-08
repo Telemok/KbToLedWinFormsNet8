@@ -1,3 +1,8 @@
+/*
+ * Application sending keyboard layout to COM-port
+ */
+
+
 namespace KbToLedWinFormsNet8
 {
     internal static class Program

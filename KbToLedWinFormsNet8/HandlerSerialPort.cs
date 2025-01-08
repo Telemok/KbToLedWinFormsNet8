@@ -9,8 +9,7 @@ namespace KbToLedWinFormsNet8
 {
 	class HandlerSerialPort
 	{
-
-		public static event EventHandler? SerialPortChanged;
+		//public static event EventHandler? SerialPortChanged;
 		public static event Action<string>? EventErrorMessage;
 		public static event Action<bool>? EventIsConnectedChange;
 		private static SerialPort? _serialPort;
@@ -51,11 +50,9 @@ namespace KbToLedWinFormsNet8
 				CloseConnection();
 
 				EventErrorMessage?.Invoke($"Ошибка открытия COM-порта: {ex.Message}");
-				//MessageBox.Show($"Ошибка открытия COM-порта: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
-		// Замена нечитаемых символов
-		private static string ProcessInvalidCharacters(string input)
+		private static string ReplaceInvalidCharactersToSquares(string input)
 		{
 			StringBuilder result = new StringBuilder();
 			foreach (char c in input)
@@ -64,9 +61,9 @@ namespace KbToLedWinFormsNet8
 					result.Append("\\r");
 				else if(c == '\n')
 					result.Append("\\n");
-				else if(char.IsControl(c)) // Управляющие символы, кроме CR и LF
+				else if(char.IsControl(c)) // Wrong symbols, but no CR || LF
 				{
-					result.Append('□'); // Квадратик
+					result.Append('□'); // Square
 				}
 				else
 				{
@@ -77,12 +74,12 @@ namespace KbToLedWinFormsNet8
 		}
 		private static void _serialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
 		{
-			string data = _serialPort?.ReadExisting();
+			string? data = _serialPort?.ReadExisting();
 
+			if (data is null)
+				return;
 
-			// Заменяем нечитаемые символы квадратиками
-			string processedData = ProcessInvalidCharacters(data);
-
+			string processedData = ReplaceInvalidCharactersToSquares(data);
 
 			EventErrorMessage?.Invoke($"DataReceived=«{processedData}».");
 		}
@@ -95,7 +92,7 @@ namespace KbToLedWinFormsNet8
 					throw new Exception($"Не удаётся записать в серийный порт сообщение «{message}» потому, что порт null.");
 				_serialPort.Write(message);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				EventErrorMessage?.Invoke($"Ошибка записи в COM-порт: {message}");
 			}

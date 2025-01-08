@@ -1,23 +1,5 @@
 using System.Globalization;
-using System.Runtime.InteropServices;
-
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Security.Permissions;
-
-using System.Diagnostics;
-
-using System;
-using Microsoft.Win32;
-using System.Globalization;
-using System.ComponentModel;
-using System.Drawing;
 using System.IO.Ports;
-using System;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 
 namespace KbToLedWinFormsNet8
@@ -25,7 +7,7 @@ namespace KbToLedWinFormsNet8
 	public partial class Form1 : Form
 	{
 
-		public static Libs.ControlledTimer loopTimer;
+		public Libs.ControlledTimer loopTimer;
 
 		public Form1()
 		{
@@ -33,8 +15,6 @@ namespace KbToLedWinFormsNet8
 			loopTimer = new(() =>
 			{
 				CultureInfo cultureName = ServiceKeyboardLayout.GetForegroundWindowCultureInfo();
-				//string s = $" culture={cultureName.EnglishName} .";
-
 
 				// «аполнение начального списка портов
 				UpdateComPortList();
@@ -67,7 +47,8 @@ namespace KbToLedWinFormsNet8
 
 					HandlerSerialPort.Write(s);
 				}
-				this.Invoke(()=> {
+				this.Invoke(() =>
+				{
 					listBoxComPorts.Enabled = !connected || !checkBoxOrderEnableComPort.Checked;
 					textBoxComPortName.Enabled = !connected || !checkBoxOrderEnableComPort.Checked;
 					textBoxBaudRate.Enabled = !connected || !checkBoxOrderEnableComPort.Checked;

@@ -8,25 +8,26 @@ using System.Threading.Tasks;
 
 namespace KbToLedWinFormsNet8
 {
-    class ServiceKeyboardLayout
-    {
+	class ServiceKeyboardLayout
+	{
 
-			[DllImport("user32.dll")]
-			private static extern IntPtr GetForegroundWindow();
+		[DllImport("user32.dll")]
+		private static extern IntPtr GetForegroundWindow();
 
-			[DllImport("user32.dll")]
-			private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+		[DllImport("user32.dll")]
+		private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
 
-			[DllImport("user32.dll")]
-			public static extern IntPtr GetKeyboardLayout(uint threadId);
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetKeyboardLayout(uint threadId);
 
-		/** Это активное окно приложения в Windows, не окно этой запущенной программы, которая будет свёрнута в tray. */
+
+		/* This IntPtr of active window of application. Not IntPtr of this app in tray. */
 		public static IntPtr GetForegroundWindowPtr()
 		{
 			IntPtr foregroundWindow = GetForegroundWindow();
 			if (foregroundWindow == IntPtr.Zero)
-				throw new Exception($"Функция GetForegroundWindowPtr() вернула указатель IntPtr.Zero!");
+				throw new Exception($"GetForegroundWindow() return IntPtr.Zero!");
 			return foregroundWindow;
 		}
 		public static uint GetForegroundWindowThreadId()
@@ -46,7 +47,7 @@ namespace KbToLedWinFormsNet8
 		public static CultureInfo GetForegroundWindowCultureInfo()
 		{
 			IntPtr layout = GetForegroundWindowKeyboardLayout();
-			int languageId = layout.ToInt32() & 0xFFFF; // Извлечение идентификатора языка
+			int languageId = layout.ToInt32() & 0xFFFF;
 			CultureInfo culture = new CultureInfo(languageId);
 			return culture;
 		}
@@ -61,7 +62,6 @@ namespace KbToLedWinFormsNet8
 		}
 		public static void setup()
 		{
-			//lastLanguageLayot = 
 		}
 	}
 }
